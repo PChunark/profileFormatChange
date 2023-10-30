@@ -18,12 +18,18 @@ profile <- read_excel("rawdata/exprofile.xlsx",
          month = month(datetime),
          day = day(datetime),
          hour = hour(datetime)) %>% 
-  group_by(year) %>% 
   mutate(seqe = rep(1:24,365))
 
+tt<- profile %>% 
+  group_by(seqe) %>% 
+  mutate(newmw = mw/2) %>% ungroup() %>% 
+  select(newmw)
+
+# USE this
+tt%>% slice(rep(1:n(), each = 2))
+  data.frame(rep(tt,2))
 
 
-%>% cut(x = as.POSIXct(myDays), breaks = "50 min")
 
 startyear <- "2019-01-01 00:30:00"
 endyear <- "2020-01-01 00:00:00"
