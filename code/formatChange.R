@@ -5,7 +5,8 @@ library(grid)
 library(gridExtra)
 library(tidyverse)
 library(plotly)
-library(writexl)
+library(writexl) # for reading excel
+library(openxlsx)
 
 profile1 <- read_excel("rawdata/GenerationProfile_PF.xlsx",
            sheet = "Generation profile",
@@ -38,9 +39,9 @@ tt%>% slice(rep(1:n(), each = 2))
 
 path <- "rawdata/GenerationProfile_PF.xlsx"
 startyear <- "2019-01-01 00:00:00"
-endyear <- "2020-12-31 23:30:00"
+endyear <- "2019-12-31 23:30:00"
 
-test <-
+adjProfFrm1HrTo30Min <-
   function(path,startyear,endyear){
     profile <- read_excel(path, #Input from user
                           sheet = "Generation profile",
@@ -57,23 +58,43 @@ test <-
                                format="%Y-%m-%d %H:%M:%S", tz = "UTC"),
                  by="30 min")
     
-    tt<-
+    # temp1<-
       profile %>% 
       # group_by(seqe) %>% 
       # mutate(newmw = mw/2) %>% 
       # ungroup() %>% 
       slice(rep(1:n(), each = 2)) %>%
       group_by(profileType) %>%
-      mutate(datetime,seq2 = rep(1:48,365)) %>% 
+      mutate(datetime,
+             seq2 = rep(1:48,365),
+             day = wday(datetime, 
+                         label = TRUE, 
+                         abbr = FALSE),
+             weekType = ifelse(wday(datetime) %in% c(1,7), "weekend", "weekday"),
+             month = month(datetime),
+             date = day(datetime)) %>% 
       # mutate(seq1 = rep(1:24, 0.5, 365))
-      # filter(profileType == "VSPP Solar C") %>%
+      filter(profileType == "VSPP Solar C",
+             month == 1,
+             date == 1) %>%
       # filter(profileType %in% c("VSPP Solar C", "VSPP Solar NE")) %>% 
       mutate(check = seq2 %% 2 == 0) %>% #Check if it is odd number
-      mutate(newmw2 = if_else(check == T, 
-                              slider::slide_dbl(mw, mean, .before = 1, .after = 1),
+      replace()
+        newmw2 = if_else(check == T, 
+                              slider::slide_dbl(mw, ~mean(.x), .before = 1, .after = 1),
                               mw))
+    data <-
+      temp1 %>% 
+      select(profileType, 
+             datetime, 
+             dailyTimeIndex = seq2, 
+             month, 
+             date,
+             day,
+             weekType, 
+             mw = newmw2)
     
-    energy <- tt %>% group_by(profileType) %>% mutate(energy = (sum(newmw2)/2))
+    energy <- temp1 %>% group_by(profileType) %>% mutate(energy = (sum(newmw2)/2))
               
     
     # a2 <- ggplotly(
@@ -82,8 +103,43 @@ test <-
     #   geom_line(aes(x=datetime, y = newmw2))
     # )
     
-    write_xlsx(split(tt, tt$profileType), path = "processdata/30-min_adjustedGenProfile.xlsx")
+    hs <- 
+      createStyle(
+      textDecoration = "BOLD", 
+      fontColour = "black", 
+      fontSize = 12,
+      fontName = "Tahoma", 
+      fgFill = "lightgrey"
+      )
+      
+    write.xlsx(split(data, data$profileType), 
+               file = "processdata/30-min_adjustedGenProfile.xlsx",
+               firstRow = TRUE,
+               colWidths = "auto",
+               headerStyle = hs)
   
 }
 yt <- test(path, startyear,endyear)
 
+toy_data <- tibble(
+  var_missing = rnorm(mean = 10, sd = 3, n = 360),
+  region = rep(c("A", "B", "C"), each = 2, times = 60),
+  gender = rep(c("Male","Female"), times = 180),
+  year = rep(2010:2014, each = 72),
+  month = rep(1:12, each = 6, times = 5)
+) %>%
+  mutate(month = month(month, label = TRUE))
+
+toy_data %>% 
+  group_by(region, gender, month) %>% 
+  mutate(
+    var_missing = 
+      if_else(
+        is.na(var_missing),
+        slider::slide_dbl(var_missing, mean, .before = 2, .after = -1),
+        var_missing
+      )
+  ) %>% 
+  ungroup()
+
+slider::slide_dbl(mw, ~mean(.x), .before = 1, .after = 1)
