@@ -20,7 +20,8 @@ adjGenProFr1HrTo30Min <-
       select(-"in_cap_mw", -"mwh") %>% 
       pivot_longer(-"profileType", names_to = "hourly", values_to = "mw") %>% 
       group_by(profileType) %>%
-      mutate(seqe = rep(1:24,365))
+      mutate(seqe = rep(1:24,365)) %>% 
+      ungroup()
     
     datetime <- seq(as.POSIXct(startyear, #Input from user 
                                format="%Y-%m-%d %H:%M:%S", tz="UTC"), 
@@ -55,9 +56,9 @@ adjGenProFr1HrTo30Min <-
                                                 .before = 1, 
                                                 .after = 1),
                               newmw2)
-                              ) 
-    temp2 <- data.frame(temp1)
-      
+                              ) %>% 
+      ungroup()
+    
     data <-
       temp1 %>% 
       select(profileType, 
@@ -69,8 +70,17 @@ adjGenProFr1HrTo30Min <-
              weekType, 
              mw = newmw2)
     
-    energy <- data %>% group_by(profileType) %>% mutate(energy = (sum(mw)/2))
-          
+    energy <- data %>% 
+              group_by(profileType) %>% 
+              mutate(energy = (sum(mw)/2)) %>% 
+              ungroup()
+    
+    data2 <-
+      data %>% 
+      mutate(time = paste0(hour(datetime),":",minute(datetime)),
+             month = month(datetime, label = TRUE)) %>% 
+      select(!c(datetime, dailyTimeIndex))  %>% 
+      pivot_wider( names_from = "time", values_from = "mw")  
     
     # a2 <- ggplotly(
     #   tt %>% 
@@ -92,6 +102,16 @@ adjGenProFr1HrTo30Min <-
                firstRow = TRUE,
                colWidths = "auto",
                headerStyle = hs)
+    
+    for (fileName in unique(data2$profileType)) {
+      filename <- paste0("processdata/", fileName, ".xlsx")
+      write.xlsx(split(data2, data2$month),
+               file = filename,
+               firstRow = TRUE,
+               colWidths = "auto",
+               headerStyle = hs)
+    }
+    
   
   return(list(data=data,energy=energy))
   }
