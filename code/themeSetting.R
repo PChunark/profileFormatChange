@@ -1,9 +1,17 @@
 library(tidyverse)
+library(extrafont) # Adding font from window sytem to R database
+library(extrafontdb)
+
+# Load font to the system
+font_import()
+
+# Theme customization
 
 text <- "Kanit"
 ThemeLine <- 
   theme_bw() +
   theme(
+    plot.title = element_text(family = text),
     panel.border=element_rect(fill=NA),
     panel.grid.minor = element_line(color = NA), 
     #    axis.title=element_text(size=5),
