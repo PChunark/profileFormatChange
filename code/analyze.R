@@ -23,7 +23,10 @@ for (i in unique(data1$profileType)) {
                   y = mw,
                   group = dummy,
                   color = season))+
-    scale_y_continuous(limits = c(min(data1$mw), max(data1$mw)))+  
-    ggtitle(i)
+    scale_y_continuous(limits = c(min(data1$mw), max(data1$mw))) +  
+    ggtitle(i) +
+    ThemeLine +
+    labs(x = element_blank(),
+         y = paste("Generation", "profile", "(MW)"))
 }   
     
