@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript --vanilla
+
 # User's Input
 path <- "rawdata/GenerationProfile_PF.xlsx"
 startyear <- "2019-01-01 00:00:00"
