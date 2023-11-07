@@ -3,7 +3,7 @@ library(extrafont) # Adding font from window sytem to R database
 library(extrafontdb)
 
 # Load font to the system
-font_import()
+# font_import()
 
 # Theme customization
 
