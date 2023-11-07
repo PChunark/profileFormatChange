@@ -104,7 +104,7 @@ adjGenProFr1HrTo30Min <-
     data2 <- list()
 
 # looping for creating file a designed excel output
-    
+  
     for (profileTypes in unique(data$profileType)) {
       
       data2[[profileTypes]]<- 
@@ -123,10 +123,13 @@ adjGenProFr1HrTo30Min <-
                colWidths = "auto",
                headerStyle = hs)
     }
-   
+
   return(list(data=data,energy=energy))
   }
 
+# run the function by getting information from user input
+# Print an execution time of a function
 
+executeTime(
 data <- adjGenProFr1HrTo30Min(path, startyear,endyear)
-
+)
