@@ -75,19 +75,13 @@ adjGenProFr1HrTo30Min <-
               mutate(energy = (sum(mw)/2)) %>% 
               ungroup()
     
-    data2 <-
-      data %>% 
-      mutate(time = paste0(hour(datetime),":",minute(datetime)),
-             month = month(datetime, label = TRUE)) %>% 
-      select(!c(datetime, dailyTimeIndex))  %>% 
-      pivot_wider( names_from = "time", values_from = "mw")  
-    
     # a2 <- ggplotly(
     #   tt %>% 
     #   ggplot()+
     #   geom_line(aes(x=datetime, y = newmw2))
     # )
-    
+
+# Styling the excel output    
     hs <- 
       createStyle(
       textDecoration = "BOLD", 
@@ -96,23 +90,40 @@ adjGenProFr1HrTo30Min <-
       fontName = "Tahoma", 
       fgFill = "lightgrey"
       )
-      
+    
+# export a long table of profiles  
     write.xlsx(split(data, data$profileType), 
                file = "processdata/30-min_adjustedGenProfile.xlsx",
                firstRow = TRUE,
                colWidths = "auto",
                headerStyle = hs)
+
+# export excel file to be in-line the National Load forecast section style
+# create list to store a profile from for loop
     
-    for (fileName in unique(data2$profileType)) {
-      filename <- paste0("processdata/", fileName, ".xlsx")
-      write.xlsx(split(data2, data2$month),
+    data2 <- list()
+
+# looping for creating file a designed excel output
+    
+    for (profileTypes in unique(data$profileType)) {
+      
+      data2[[profileTypes]]<- 
+        data %>% 
+        mutate(time = paste0(hour(datetime),":",minute(datetime)),
+               month = month(datetime, label = TRUE)) %>%
+        mutate(year = year(datetime), .before = month) %>% 
+        select(!c(datetime, dailyTimeIndex))  %>% 
+        pivot_wider( names_from = "time", values_from = "mw") %>% 
+        filter(profileType == profileTypes)
+    
+      filename <- paste0("processdata/", profileTypes, ".xlsx")
+      write.xlsx(split(data2[[profileTypes]], data2[[profileTypes]]$month),
                file = filename,
                firstRow = TRUE,
                colWidths = "auto",
                headerStyle = hs)
     }
-    
-  
+   
   return(list(data=data,energy=energy))
   }
 
