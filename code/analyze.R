@@ -1,3 +1,4 @@
+executeTime(
 data1<-
   data$data %>% 
   mutate(daydate = date(datetime),
@@ -7,11 +8,12 @@ data1<-
   mutate(season = if_else(month %in% c("3","4","5"), "Summer",
                           if_else(month %in% c("6","7","8","9","10"), "Rainy",
                                   if_else(month %in% c("11","12","1","2"), "Winter","Others"))),.after = "date") %>% 
-  filter(str_detect(profileType, "New VSPP"))  
-    unique(data1$profileType)
+  filter(str_detect(profileType, "New VSPP"))
+)
 
+plot <- list() 
 
-plot <- list()    
+executeTime(
 for (i in unique(data1$profileType)) {
     # name <- unique(data1$profileType)
     plot[[i]]<-
@@ -29,4 +31,4 @@ for (i in unique(data1$profileType)) {
     labs(x = element_blank(),
          y = paste("Generation", "profile", "(MW)"))
 }   
-    
+)
