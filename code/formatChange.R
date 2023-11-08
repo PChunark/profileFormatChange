@@ -1,3 +1,4 @@
+#!/usr/bin/env -S Rscript --vanilla 
 library(readxl)
 library(scales)
 library(cowplot)
