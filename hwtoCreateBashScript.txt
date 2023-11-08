@@ -1,0 +1,9 @@
+# Note for doing a Bash file on Window
+
+1. Create a bash file and save file in .sh
+2. Create an executable file in Command Prompt (CMD) on window
+--> chmod +x [filename].sh
+3. Run a .sh file
+--> sh [filename].sh
+
+
