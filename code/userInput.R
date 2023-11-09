@@ -1,4 +1,4 @@
-#!/usr/bin/env -S Rscript --vanilla 
+#!/usr/bin/env Rscript
 
 # name: Users fill the path, start year and end year
 

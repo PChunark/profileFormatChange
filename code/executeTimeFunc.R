@@ -1,4 +1,5 @@
-#!/usr/bin/env -S Rscript --vanilla 
+#!/usr/bin/env Rscript
+
 executeTime <-
   function(code){
     start = Sys.time()
