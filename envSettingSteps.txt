@@ -1,0 +1,33 @@
+How to install a conda by using the Command Prompt (CMD) in window
+The miniconda is a Linux. It is used to create a snakemake file and other workflows.
+Miniconda is a free minimal installer for conda. It is a small bootstrap version of Anaconda that includes only conda, Python, 
+the packages they both depend on, and a small number of other useful packages (like pip, zlib, and a few others).
+
+1. Download miniconda and install
+https://docs.conda.io/projects/miniconda/en/latest/
+
+2. Set path in Environmental variables
+Step 1: Right click "This PC" --> Properties --> Advanced system setting --> Environmental Variables --> Select&Edit "PATH" for both the windows 
+--> Set path by going to your miniconda storage. In this case "C:\ProgramData\miniconda3\Scripts"
+
+3. Download the Cygwin software. This software brings Linux engine to Window
+Step 1: https://www.cygwin.com/install.html
+Step 2: Restart your computer
+
+4. Check and Update the conda version in the Command Prompt (CMD)
+Step 1: Start the CMD with "Run as Administrator"
+Step 2: conda --version
+Step 3: conda update -n base -c defaults conda
+Step 4: Typing "y" in the cmd which means "yes, accept for update the version"
+Step 5: Recheck your conda version. The version should be different from Step 2.
+-n base: a name of the base environment that we need to update
+-c defaults: get conda from the default channel.
+
+5. Download & Install Memba
+Memba is a rewritten version of conda. It is faster than conda. It is great for working and building environment. 
+Step 1: conda install -n base -c conda-forge mamba
+Step 2: Check the version by mamba --version 
+-c conda-forge: looking in the conda-forge channel
+
+6. Create an environment for the "profileFormatChange" project
+mamba create -n frmChg -c conda-forge -c bioconda -c R r-base=4.2 r-tidyverse=2.0.0
