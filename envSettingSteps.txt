@@ -29,5 +29,6 @@ Step 1: conda install -n base -c conda-forge mamba
 Step 2: Check the version by mamba --version 
 -c conda-forge: looking in the conda-forge channel
 
-6. Create an environment for the "profileFormatChange" project
-mamba create -n frmChg -c conda-forge -c bioconda -c R r-base=4.2 r-tidyverse=2.0.0
+6. Create an environment for the "profileFormatChange" project. It can be used 2 commands.
+1. mamba create -n frmChg -c conda-forge -c bioconda -c R r-base=4.2 r-tidyverse=2.0.0
+2. mamba env create -f environment.yml. This command needs a "environment.yml" file. 
